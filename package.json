@@ -1,0 +1,30 @@
+{
+  "name": "weatherbot",
+  "version": "1.0.0",
+  "description": "A twitter bot that replies with a forecast.",
+  "main": "weatherbot.js",
+  "dependencies": {
+    "geocoder": "^0.2.0",
+    "moment": "^2.8.4",
+    "twit": "^1.1.19",
+    "request": "^2.49.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node weatherbot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justinph/weatherbot.git"
+  },
+  "keywords": [
+    "weather",
+    "forecast"
+  ],
+  "author": "@jkeefe, @justinph",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justinph/weatherbot/issues"
+  },
+  "homepage": "https://github.com/justinph/weatherbot"
+}
