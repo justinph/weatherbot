@@ -16,6 +16,9 @@ The program runs in [Node](http://nodejs.org/) and uses the following node modul
 - [Geocoder](https://www.npmjs.com/package/node-geocoder)
 - [Request](https://www.npmjs.com/package/request)
 
+To install these packages, run `npm install` in the directory where you have cloned this repository. This will install the packages.
+
+
 ##Keys
 
 It also requires Twitter API keys and OAUTH tokens you can get by logging into your Twitter account and going to the Apps page for your account at [https://apps.twitter.com/](https://apps.twitter.com/).
@@ -28,12 +31,16 @@ The keys, along with an API key from [forecast.io](https://developer.forecast.io
 		TWITTER_CONSUMER_SECRET = 'your_consumer_secret_goes_here',
 		TWITTER_ACCESS_TOKEN = 'your_access_token_goes_here',
 		TWITTER_ACCESS_TOKEN_SECRET = 'your_access_token_secret_goes_here',
-		FORECAST_IO_API_KEY = 'your_forecast_io_key_goes_here';
+	    TWITTER_USER_NUMBER = 11111111111111,  //your twitter user id number
+        TWITTER_USER_NAME = '@SomeWeatherBot',   //your twitter user name
+		FORECAST_IO_API_KEY = 'your_forecast_io_key_goes_here';		
 	
 		module.exports.TWITTER_CONSUMER_KEY = TWITTER_CONSUMER_KEY;
 		module.exports.TWITTER_CONSUMER_SECRET = TWITTER_CONSUMER_SECRET;
 		module.exports.TWITTER_ACCESS_TOKEN = TWITTER_ACCESS_TOKEN;
 		module.exports.TWITTER_ACCESS_TOKEN_SECRET = TWITTER_ACCESS_TOKEN_SECRET;
+		module.exports.TWITTER_USER_NUMBER = TWITTER_USER_NUMBER;
+        module.exports.TWITTER_USER_NAME = TWITTER_USER_NAME;
 		module.exports.FORECAST_IO_API_KEY = FORECAST_IO_API_KEY;
 
 ##Running
