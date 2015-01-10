@@ -2,7 +2,7 @@ var Twit = require('twit'),
 	geocoder = require('geocoder'),
 	request = require('request'),
 	moment = require('moment'),
-	keys = require('../api_keys/weatherbot_keys');
+	keys = require('./weatherbot_keys');
 
 var Bot = new Twit({
     consumer_key:         keys.TWITTER_CONSUMER_KEY,
@@ -11,37 +11,85 @@ var Bot = new Twit({
 	access_token_secret:  keys.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-// Listen To Twitter Stream filtered for @HiWeatherbot
-var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
+
+// Listen To Twitter Stream filtered for the desired username
+var stream = Bot.stream('statuses/filter', { track: [keys.TWITTER_USER_NAME] });
+
+console.log("up and running...");
 
 stream.on('error', function (error) {
-	
+	console.log("DOH!, I've seen an error!");
+	console.log('message:', error.message);
+	console.log('status code:', error.statusCode);
+	console.log('code:', error.code);
+	console.log('twitterReply:', error.twitterReply);
+	console.log('code:', error.allErrors);
+	console.log(error);
+
 	// Tweet the error at my owner
-	var tweet_text = "@jkeefe Uh oh. I'm having trouble: "+ error + " A little help?";
-	tweetThis(tweet_text, null);
+	//var tweet_text = "@justinph Uh oh. I'm having trouble: "+ error + " A little help?";
+	//tweetThis(tweet_text, null);
 	
 });
 
-// If someone mentions @HiWeatherbot, jump into action
+// Connect 
+stream.on('connected', function (res) {
+	console.log('stream connected (' + res.statusCode + ')');
+});
+//Reconnect...
+stream.on('reconnect', function (req, res, interval) {
+	console.log('stream reconnecting in ' + interval + ' (' + res.statusCode + ')');
+});
+stream.on('limit', function (limitMessage) {
+	console.log('stream received limit message:' + limitMessage );
+});
+
+// If someone mentions desired username, jump into action
 stream.on('tweet', function (tweet) {
 
 	// Is the tweet directed at me? We'll know because the in_reply_to_user_id
-	// will be *MY* user id, which is 2908555695.
-	if (tweet.in_reply_to_user_id != 2908555695) {
+	if (tweet.in_reply_to_user_id !== keys.TWITTER_USER_NUMBER) {
 		
 		// in_reply_to_user_id doesn't match
 		// Tweet not directed at me, just a mention
-		var tweet_text = "@jkeefe Someone's tweeting about me. Might wanna check it out: http://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+		var tweet_text = "@justinph Someone's tweeting about me. Might wanna check it out: http://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
 		tweetThis(tweet_text, null);
 
 
-		} else {	
+	} else {
 		
 		console.log("---");
 		console.log("Tweet received:", tweet.text);
 		
 		// Tweet directed at me! Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
+
+		//TODO:
+		// Re-work this so that it's more modular
+		// If the geocode from text fails, then we should look at the place in the tweet, if set, 
+		// and geocode from that
+
+		console.log('location text:',location_text);
+
+		if (tweet.place){
+			console.log('full name of place:', tweet.place.full_name);
+
+			// var place_path =  'geo/id/' + tweet.place.id;
+
+			// Bot.get(place_path, function (err, data, response){
+			// 	console.log('place retrieved!');
+			// 	//console.log(err);
+			// 	console.log(data);
+			// 	if (data.bounding_box){
+			// 		console.log(console.log(data.bounding_box, data.bounding_box.coordinates));
+			// 	}
+			// 	//console.log(response);
+			// });
+		} else {
+			console.log('no place');
+		}
+
+		return;
 		
 		// TODO: Detect other fun things, like "thank you" and "hello"
 		
@@ -57,7 +105,7 @@ stream.on('tweet', function (tweet) {
 			if (err) {
 				
 				// @reply about the geocode fail
-				tweet_text = "@" + replyto + " Hi! Something went wrong with my geocoding system, so I can't get you a forecast. Sorry! cc @jkeefe";
+				tweet_text = "@" + replyto + " Hi! Something went wrong with my geocoding system, so I can't get you a forecast. Sorry! cc @justinph";
 				tweetThis(tweet_text, tweet.id_str);
 				
 				// log the error
@@ -105,7 +153,7 @@ stream.on('tweet', function (tweet) {
 						
 						// Something went wrong getting forecast
 						// @reply about that
-						tweet_text = "@" + replyto + " Hi! Something went wrong getting your forcast. I'm sorry! cc @jkeefe";
+						tweet_text = "@" + replyto + " Hi! Something went wrong getting your forcast. I'm sorry! cc @justinph";
 						tweetThis(tweet_text, tweet.id_str);
 
 						// log the error
@@ -173,7 +221,7 @@ stream.on('tweet', function (tweet) {
 						
 						var chance = Math.round(forecast.precipProbability * 100);
 						var precip = forecast.precipType;
-						var more = "http://forecast.io/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
+						var more = "http://www.mprnews.org/weather/" + lat.toPrecision(4) + "," + lon.toPrecision(4);
 						var precip_text = "";
 						
 						// show precipitation repsonse if the chance is greater than 0%
@@ -259,9 +307,9 @@ function getLocality(addrComponents) {
 // the tweeting function			
 function tweetThis(text, id) {
 	
-	Bot.post('statuses/update', { 
+	Bot.post('statuses/update', {
 		status: text,
-		in_reply_to_status_id: id 
+		in_reply_to_status_id: id
 		}, function(err, data, response) {
 			/// console.log(data);
 	});
