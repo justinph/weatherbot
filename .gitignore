@@ -29,3 +29,4 @@ Temporary Items
 
 # Ignore keys so they don't go public
 weatherbot_keys.js
+node_modules/

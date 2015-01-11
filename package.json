@@ -9,7 +9,9 @@
     "twit": "^1.1.19",
     "request": "^2.49.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "underscore": "^1.7.0"
+  },
   "scripts": {
     "test": "node weatherbot.js"
   },
